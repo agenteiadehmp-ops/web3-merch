@@ -5,4 +5,7 @@
  * discovers those optional imports through the connector barrel, so we alias
  * them here instead of installing unrelated payment packages.
  */
-export {};
+
+export function toClientEvmSigner(): never {
+  throw new Error("Coinbase x402 is not enabled in this MVP.");
+}
