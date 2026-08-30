@@ -1,6 +1,5 @@
-import { base, mainnet, polygon } from "@reown/appkit/networks";
+import { base, mainnet, polygon, type AppKitNetwork } from "@reown/appkit/networks";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { cookieStorage, createStorage } from "wagmi";
 
 const configuredProjectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
@@ -18,16 +17,12 @@ export const reownProjectId: string = configuredProjectId;
  * These do NOT claim that any supported collection lives on these chains.
  * Collection-to-chain mappings are activated separately only after verification.
  */
-export const walletNetworks: [
-  typeof mainnet,
-  typeof polygon,
-  typeof base,
-] = [mainnet, polygon, base];
+export const walletNetworks = [mainnet, polygon, base] as [
+  AppKitNetwork,
+  ...AppKitNetwork[],
+];
 
 export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
   ssr: true,
   projectId: reownProjectId,
   networks: walletNetworks,
