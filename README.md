@@ -4,13 +4,13 @@ Physical merchandising for NFT holders.
 
 > Wallet → NFT → Physical Product → Digital Identity
 
-This repository starts deliberately small. The first validation target is one real flow:
+The first validation target is:
 
 **real wallet → real NFT → real payment → real premium T-shirt → real customer**
 
 ## Current status
 
-Completed foundation:
+Foundation in place:
 
 - Next.js App Router
 - React + TypeScript
@@ -18,21 +18,23 @@ Completed foundation:
 - ESLint
 - mobile-first dark landing page
 - GitHub Actions validation
-- initial Supabase/Postgres collection registry schema
-- four pilot collections seeded in a safe, non-sellable state
+- Supabase/Postgres collection registry schema
+- four pilot collections seeded in a non-sellable state
+- browser-safe Supabase client boundary
+- restricted RPC for supported-collection reads
 
 Not included yet:
 
-- live Supabase project connection
+- remote schema applied to the Supabase project
 - wallet connection
 - NFT indexer
-- blockchain reads
+- blockchain ownership reads
 - Stripe
 - print-on-demand provider integration
 
 ## Requirements
 
-- Node.js 20.9+
+- Node.js 22+
 - npm
 
 ## Local setup
@@ -42,17 +44,22 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Create a local `.env.local` with:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+```
+
+Never commit `.env.local`.
 
 ## Validation
-
-Before closing a development task, run:
 
 ```bash
 npm run verify
 ```
 
-This runs typecheck, lint, and Next.js build.
+This runs typecheck, lint, and the Next.js production build.
 
 ## Collection registry
 
@@ -67,34 +74,26 @@ collections
 collection_contracts
 ```
 
-The bootstrap seed includes Punkism, Polygon Ape: The Evolution, Doodrillas and BackPunks, but intentionally leaves their networks/contracts/licensing unverified.
+The application does not read those tables directly with the publishable key.
+Instead it uses the restricted `get_supported_collections()` RPC.
 
-See `supabase/README.md` for the security and activation rules.
-
-## Architecture boundaries
-
-The MVP stays in one Next.js application. External systems are introduced behind small boundaries when needed, rather than in advance.
-
-Future feature areas already have directories for wallet, collections, NFTs, product building, checkout, and orders.
+See `supabase/README.md`.
 
 ## Security baseline
 
 - Never request or store seed phrases/private keys.
 - Never commit secret `.env` files.
-- Never expose `SUPABASE_SERVICE_ROLE_KEY` in the browser.
-- Public browser configuration and server secrets must remain separated.
-- Wallet data and prices must be validated server-side when those features are introduced.
-- Payment fulfillment must eventually be driven by verified Stripe webhooks.
+- Never expose a Supabase service-role/secret key in browser code.
 - Collection merchandising stays disabled until commercial-use rights are approved.
 - Collection contracts stay inactive until verified.
+- Public Supabase access is limited to an explicit read-only RPC surface.
+- Payment fulfillment will eventually be driven by verified Stripe webhooks.
 
 ## Continuous integration
 
-GitHub Actions runs on every push and pull request to `main` and executes:
+GitHub Actions runs on every push and pull request to `main`:
 
 ```bash
 npm install --no-audit --no-fund
 npm run verify
 ```
-
-The first environment that generates `package-lock.json` should commit it; CI can then switch from `npm install` to `npm ci`.

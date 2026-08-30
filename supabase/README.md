@@ -1,46 +1,67 @@
 # Supabase data layer
 
-Task 2 introduces only the minimum registry needed before wallet/NFT discovery:
+The MVP currently uses Supabase/Postgres for the supported collection registry.
+
+## Schema
 
 - `stores`
 - `chains`
 - `collections`
 - `collection_contracts`
 
-The initial four pilot collections are seeded in `seed.sql`, but no blockchain,
-contract address, token standard, or commercial-use permission is guessed.
+The four pilot collections are seeded in `seed.sql`, but no blockchain, contract
+address, token standard, or commercial-use permission is guessed.
 
-## Security posture
+## Public read surface
 
-All four tables:
+The tables themselves remain locked down with RLS and revoked direct grants.
 
-- have Row Level Security enabled;
-- revoke direct access from `anon` and `authenticated`;
-- are intended to be accessed server-side until explicit public read policies are designed.
+The application uses only:
 
-A future Supabase service-role/secret key must never be exposed through
-`NEXT_PUBLIC_*` variables.
-
-## Local workflow
-
-Once Supabase CLI is introduced and available:
-
-```bash
-supabase start
-supabase db reset
+```sql
+public.get_supported_collections()
 ```
 
-Schema changes should be added as new migration files rather than edited directly
-on a remote database.
+This RPC returns a collection only when all of these are true:
 
-## Activation rule
+- collection status is `active`
+- license status is `approved`
+- merchandising is enabled
+- at least one contract is verified and active
+- the referenced chain is active
 
-A collection cannot have `merchandising_enabled = true` unless both are true:
+The function is executable by `anon` and `authenticated`, but does not grant
+those roles direct table access.
 
-- `status = 'active'`
-- `license_status = 'approved'`
+## Environment variables
 
-A collection contract cannot have `active = true` until
-`verification_status = 'verified'`.
+The browser-safe connection needs:
 
-These constraints deliberately make "unknown" safe by default.
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+```
+
+Do not commit real environment values. Put them in `.env.local` locally and in
+the deployment provider's environment settings later.
+
+A service-role/secret key is not needed for the current public registry read and
+must never be exposed to browser code.
+
+## Applying schema
+
+For the first remote project bootstrap, use the Supabase SQL Editor and execute,
+in order:
+
+1. `migrations/20260830155000_create_collection_registry.sql`
+2. `migrations/20260830161500_create_supported_collections_rpc.sql`
+3. `seed.sql`
+
+Afterwards, running this should return zero rows until a collection is explicitly
+approved and a verified contract/chain is activated:
+
+```sql
+select * from public.get_supported_collections();
+```
+
+That empty result is expected and is the safe default.
