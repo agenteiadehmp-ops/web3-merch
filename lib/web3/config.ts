@@ -1,6 +1,6 @@
 import { base, mainnet, polygon } from "@reown/appkit/networks";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { cookieStorage, createStorage } from "@wagmi/core";
+import { cookieStorage, createStorage } from "wagmi";
 
 const configuredProjectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID;
 
