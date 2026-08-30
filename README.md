@@ -10,22 +10,21 @@ This repository starts deliberately small. The first validation target is one re
 
 ## Current status
 
-Task 1 establishes the application shell and visual home page only.
-
-Included:
+Completed foundation:
 
 - Next.js App Router
 - React + TypeScript
 - Tailwind CSS
 - ESLint
 - mobile-first dark landing page
-- feature-oriented repository structure
-- `.env.example` with no secrets
+- GitHub Actions validation
+- initial Supabase/Postgres collection registry schema
+- four pilot collections seeded in a safe, non-sellable state
 
 Not included yet:
 
+- live Supabase project connection
 - wallet connection
-- Supabase
 - NFT indexer
 - blockchain reads
 - Stripe
@@ -50,41 +49,52 @@ Open `http://localhost:3000`.
 Before closing a development task, run:
 
 ```bash
-npm run build
-npm run typecheck
-npm run lint
+npm run verify
 ```
+
+This runs typecheck, lint, and Next.js build.
+
+## Collection registry
+
+The supported-collection architecture lives in Postgres rather than collection-specific application logic.
+
+Current tables:
+
+```text
+stores
+chains
+collections
+collection_contracts
+```
+
+The bootstrap seed includes Punkism, Polygon Ape: The Evolution, Doodrillas and BackPunks, but intentionally leaves their networks/contracts/licensing unverified.
+
+See `supabase/README.md` for the security and activation rules.
 
 ## Architecture boundaries
 
 The MVP stays in one Next.js application. External systems are introduced behind small boundaries when needed, rather than in advance.
 
-Future feature areas already have directories for wallet, collections, NFTs, product building, checkout, and orders. Empty directories contain `.gitkeep` files only to preserve the intended structure.
+Future feature areas already have directories for wallet, collections, NFTs, product building, checkout, and orders.
 
 ## Security baseline
 
 - Never request or store seed phrases/private keys.
-- Never commit `.env*` secret files.
+- Never commit secret `.env` files.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` in the browser.
 - Public browser configuration and server secrets must remain separated.
 - Wallet data and prices must be validated server-side when those features are introduced.
 - Payment fulfillment must eventually be driven by verified Stripe webhooks.
+- Collection merchandising stays disabled until commercial-use rights are approved.
+- Collection contracts stay inactive until verified.
 
 ## Continuous integration
 
-GitHub Actions is configured in `.github/workflows/ci.yml` to run on every push and pull request to `main`.
-
-The CI job installs dependencies and runs:
+GitHub Actions runs on every push and pull request to `main` and executes:
 
 ```bash
-npm run typecheck
-npm run lint
-npm run build
-```
-
-You can run the same checks locally with:
-
-```bash
+npm install --no-audit --no-fund
 npm run verify
 ```
 
-> The repository does not include a lockfile yet because the initial sandbox could not reach the npm registry. The first environment with npm access should run `npm install`, verify the project, and commit the generated `package-lock.json` so subsequent CI runs can switch from `npm install` to `npm ci`.
+The first environment that generates `package-lock.json` should commit it; CI can then switch from `npm install` to `npm ci`.
