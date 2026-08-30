@@ -1,24 +1,11 @@
+import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
+
 const supportedCollections = [
   "Punkism",
   "Polygon Ape: The Evolution",
   "Doodrillas",
   "BackPunks",
 ];
-
-function ArrowIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-    >
-      <path d="M5 12h13M14 7l5 5-5 5" />
-    </svg>
-  );
-}
 
 function ProductPlaceholder() {
   return (
@@ -47,7 +34,9 @@ function ProductPlaceholder() {
       <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between border-t border-white/10 bg-black/30 px-5 py-4 backdrop-blur">
         <div>
           <p className="text-sm font-semibold">Premium T-Shirt</p>
-          <p className="mt-1 text-xs text-white/45">Front print · MVP product</p>
+          <p className="mt-1 text-xs text-white/45">
+            Front print · MVP product
+          </p>
         </div>
         <span className="rounded-full border border-white/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">
           Preview
@@ -63,11 +52,17 @@ export default function Home() {
       <div className="pointer-events-none fixed inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:42px_42px]" />
 
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-6 sm:px-8 lg:px-10">
-        <a href="#top" className="group flex items-center gap-3" aria-label="Web3 Merch home">
+        <a
+          href="#top"
+          className="group flex items-center gap-3"
+          aria-label="Web3 Merch home"
+        >
           <span className="grid h-9 w-9 place-items-center bg-[#ff4d00] font-black text-black transition-transform group-hover:rotate-3">
             W3
           </span>
-          <span className="text-sm font-bold uppercase tracking-[0.16em]">Web3 Merch</span>
+          <span className="text-sm font-bold uppercase tracking-[0.16em]">
+            Web3 Merch
+          </span>
         </a>
 
         <span className="rounded-full border border-white/10 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.2em] text-white/45 sm:text-[10px]">
@@ -87,26 +82,21 @@ export default function Home() {
 
           <h1 className="max-w-3xl text-[clamp(3.6rem,15vw,8.8rem)] font-black uppercase leading-[0.78] tracking-[-0.075em]">
             Turn your NFT
-            <span className="mt-3 block text-[#ff4d00]">into something real.</span>
+            <span className="mt-3 block text-[#ff4d00]">
+              into something real.
+            </span>
           </h1>
 
           <p className="mt-8 max-w-xl text-base leading-7 text-white/58 sm:text-lg">
-            Connect your wallet. Choose an NFT you own. Create premium physical merch built around your digital identity.
+            Connect your wallet. Choose an NFT you own. Create premium physical
+            merch built around your digital identity.
           </p>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button
-              type="button"
-              disabled
-              title="Wallet connection will be implemented in the wallet task"
-              className="group inline-flex min-h-14 items-center justify-center gap-3 bg-[#f7f4eb] px-6 text-sm font-black uppercase tracking-[0.12em] text-black transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-100"
-            >
-              Connect wallet
-              <ArrowIcon />
-            </button>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-              Wallet connection comes next
-            </span>
+          <div className="mt-9">
+            <ConnectWalletButton />
+            <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-white/30">
+              No seed phrase · No fund access · No transaction required
+            </p>
           </div>
 
           <div className="mt-14 grid max-w-xl grid-cols-3 border-y border-white/10 py-5">
@@ -115,9 +105,16 @@ export default function Home() {
               ["02", "Choose"],
               ["03", "Wear"],
             ].map(([number, label]) => (
-              <div key={number} className="border-r border-white/10 px-3 first:pl-0 last:border-r-0">
-                <span className="font-mono text-[9px] tracking-[0.2em] text-[#ff6a2a]">{number}</span>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] sm:text-sm">{label}</p>
+              <div
+                key={number}
+                className="border-r border-white/10 px-3 first:pl-0 last:border-r-0"
+              >
+                <span className="font-mono text-[9px] tracking-[0.2em] text-[#ff6a2a]">
+                  {number}
+                </span>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] sm:text-sm">
+                  {label}
+                </p>
               </div>
             ))}
           </div>
@@ -128,17 +125,27 @@ export default function Home() {
 
       <section className="relative z-10 border-y border-white/10 bg-[#0d0d0d]">
         <div className="mx-auto w-full max-w-7xl px-5 py-7 sm:px-8 lg:px-10">
-          <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.24em] text-white/35">Initial supported collections</p>
+          <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.24em] text-white/35">
+            Initial supported collections
+          </p>
           <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
             {supportedCollections.map((collection, index) => (
-              <div key={collection} className="min-h-24 bg-[#0d0d0d] p-4">
-                <span className="font-mono text-[9px] text-white/28">0{index + 1}</span>
-                <p className="mt-5 text-sm font-semibold leading-5">{collection}</p>
+              <div
+                key={collection}
+                className="min-h-24 bg-[#0d0d0d] p-4"
+              >
+                <span className="font-mono text-[9px] text-white/28">
+                  0{index + 1}
+                </span>
+                <p className="mt-5 text-sm font-semibold leading-5">
+                  {collection}
+                </p>
               </div>
             ))}
           </div>
           <p className="mt-4 max-w-3xl text-xs leading-5 text-white/35">
-            Collection contracts, chains, and commercial-use permissions will be verified before any NFT integration is activated.
+            Collection contracts, chains, and commercial-use permissions will
+            be verified before any NFT integration is activated.
           </p>
         </div>
       </section>

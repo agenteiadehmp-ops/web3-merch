@@ -14,6 +14,9 @@ jobs:
     name: Typecheck, lint and build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_REOWN_PROJECT_ID: d4045c831bdd0641aac9753b3d1fc42c
 
     steps:
       - name: Checkout

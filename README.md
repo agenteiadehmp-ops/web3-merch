@@ -15,20 +15,16 @@ Foundation in place:
 - Next.js App Router
 - React + TypeScript
 - Tailwind CSS
-- ESLint
-- mobile-first dark landing page
 - GitHub Actions validation
-- Supabase/Postgres collection registry schema
-- four pilot collections seeded in a non-sellable state
-- browser-safe Supabase client boundary
-- restricted RPC for supported-collection reads
+- Supabase/Postgres supported-collection registry
+- Reown AppKit + Wagmi + Viem wallet connection
+- disconnect state and connected address/chain UI
 
 Not included yet:
 
-- remote schema applied to the Supabase project
-- wallet connection
-- NFT indexer
-- blockchain ownership reads
+- NFT discovery/indexer
+- verified collection contract mappings
+- ownership verification
 - Stripe
 - print-on-demand provider integration
 
@@ -44,14 +40,45 @@ npm install
 npm run dev
 ```
 
-Create a local `.env.local` with:
+Create `.env.local`:
 
 ```text
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+NEXT_PUBLIC_REOWN_PROJECT_ID=...
 ```
 
-Never commit `.env.local`.
+The Reown project ID and Supabase publishable key are public client identifiers,
+not privileged secrets. Server-only secrets must never use `NEXT_PUBLIC_`.
+
+## Wallet architecture
+
+The wallet layer uses:
+
+- Reown AppKit
+- Wagmi 2.x
+- Viem
+- TanStack Query
+
+Current wallet-capability networks are Ethereum mainnet, Polygon and Base. These
+are connectivity options only. They do **not** assert that any pilot collection
+lives on those chains.
+
+Current scope:
+
+- connect wallet
+- disconnect wallet
+- display wallet address
+- display connected chain
+
+Not yet implemented:
+
+- message signing
+- NFT reads
+- ownership verification
+- blockchain transactions
+- crypto payments
 
 ## Validation
 
@@ -61,39 +88,12 @@ npm run verify
 
 This runs typecheck, lint, and the Next.js production build.
 
-## Collection registry
-
-The supported-collection architecture lives in Postgres rather than collection-specific application logic.
-
-Current tables:
-
-```text
-stores
-chains
-collections
-collection_contracts
-```
-
-The application does not read those tables directly with the publishable key.
-Instead it uses the restricted `get_supported_collections()` RPC.
-
-See `supabase/README.md`.
-
 ## Security baseline
 
 - Never request or store seed phrases/private keys.
-- Never commit secret `.env` files.
-- Never expose a Supabase service-role/secret key in browser code.
+- Connecting a wallet does not grant access to funds.
+- No transaction is requested in the current flow.
+- Never commit server secrets.
 - Collection merchandising stays disabled until commercial-use rights are approved.
 - Collection contracts stay inactive until verified.
 - Public Supabase access is limited to an explicit read-only RPC surface.
-- Payment fulfillment will eventually be driven by verified Stripe webhooks.
-
-## Continuous integration
-
-GitHub Actions runs on every push and pull request to `main`:
-
-```bash
-npm install --no-audit --no-fund
-npm run verify
-```

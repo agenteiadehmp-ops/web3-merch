@@ -11,10 +11,16 @@
     "verify": "npm run typecheck && npm run lint && npm run build"
   },
   "dependencies": {
+    "@reown/appkit": "^1.7.18",
+    "@reown/appkit-adapter-wagmi": "^1.7.18",
     "@supabase/supabase-js": "2.112.4",
+    "@tanstack/react-query": "5.x",
+    "@wagmi/core": "2.x",
     "next": "16.3.3",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "viem": "2.x",
+    "wagmi": "2.x"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
