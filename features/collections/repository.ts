@@ -20,6 +20,12 @@ export interface SupportedCollection {
   contracts: SupportedCollectionContract[];
 }
 
+export interface DetectableCollection extends SupportedCollection {
+  status: "under_review" | "active";
+  license_status: string;
+  merchandising_enabled: boolean;
+}
+
 export async function getSupportedCollections(): Promise<SupportedCollection[]> {
   const supabase = getSupabasePublicClient();
   const { data, error } = await supabase.rpc("get_supported_collections");
@@ -29,4 +35,15 @@ export async function getSupportedCollections(): Promise<SupportedCollection[]> 
   }
 
   return (data ?? []) as SupportedCollection[];
+}
+
+export async function getDetectableCollections(): Promise<DetectableCollection[]> {
+  const supabase = getSupabasePublicClient();
+  const { data, error } = await supabase.rpc("get_detectable_collections");
+
+  if (error) {
+    throw new Error(`Unable to load detectable collections: ${error.message}`);
+  }
+
+  return (data ?? []) as DetectableCollection[];
 }
