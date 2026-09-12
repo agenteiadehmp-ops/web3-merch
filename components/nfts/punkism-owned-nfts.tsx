@@ -23,25 +23,25 @@ interface PunkismResponse {
   error?: string;
 }
 
+interface DiscoveryError {
+  owner: string;
+  message: string;
+}
+
 export function PunkismOwnedNfts() {
   const { address, isConnected } = useAccount();
   const [data, setData] = useState<PunkismResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [requestError, setRequestError] = useState<DiscoveryError | null>(null);
 
   useEffect(() => {
     if (!isConnected || !address) {
-      setData(null);
-      setError(null);
-      setLoading(false);
       return;
     }
 
+    const owner = address;
     const controller = new AbortController();
-    setLoading(true);
-    setError(null);
 
-    fetch(`/api/nfts/punkism?owner=${encodeURIComponent(address)}`, {
+    fetch(`/api/nfts/punkism?owner=${encodeURIComponent(owner)}`, {
       signal: controller.signal,
       cache: "no-store",
     })
@@ -54,18 +54,20 @@ export function PunkismOwnedNfts() {
       })
       .then((payload) => {
         setData(payload);
-        setLoading(false);
+        setRequestError(null);
       })
-      .catch((requestError: unknown) => {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") {
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
           return;
         }
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : "Unable to discover Punkism NFTs.",
-        );
-        setLoading(false);
+
+        setRequestError({
+          owner,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unable to discover Punkism NFTs.",
+        });
       });
 
     return () => controller.abort();
@@ -84,6 +86,14 @@ export function PunkismOwnedNfts() {
     );
   }
 
+  const currentData =
+    data?.owner.toLowerCase() === address.toLowerCase() ? data : null;
+  const currentError =
+    requestError?.owner.toLowerCase() === address.toLowerCase()
+      ? requestError.message
+      : null;
+  const loading = !currentData && !currentError;
+
   return (
     <div className="border border-white/10 bg-[#0d0d0d] p-6 sm:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -96,7 +106,7 @@ export function PunkismOwnedNfts() {
           </h2>
         </div>
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-          {loading ? "Scanning…" : `${data?.count ?? 0} found`}
+          {loading ? "Scanning…" : `${currentData?.count ?? 0} found`}
         </span>
       </div>
 
@@ -106,21 +116,21 @@ export function PunkismOwnedNfts() {
         </div>
       ) : null}
 
-      {error ? (
+      {currentError ? (
         <div className="mt-6 border border-[#ff4d00]/35 bg-[#ff4d00]/10 p-5 text-sm text-white/70">
-          {error}
+          {currentError}
         </div>
       ) : null}
 
-      {!loading && !error && data && data.nfts.length === 0 ? (
+      {!loading && !currentError && currentData && currentData.nfts.length === 0 ? (
         <div className="mt-6 border border-white/10 p-5 text-sm text-white/55">
           No Punkism NFTs were found for this wallet.
         </div>
       ) : null}
 
-      {!loading && !error && data && data.nfts.length > 0 ? (
+      {!loading && !currentError && currentData && currentData.nfts.length > 0 ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data.nfts.map((nft) => (
+          {currentData.nfts.map((nft) => (
             <article
               key={nft.tokenId}
               className="overflow-hidden border border-white/10 bg-[#080808]"
@@ -155,7 +165,7 @@ export function PunkismOwnedNfts() {
         </div>
       ) : null}
 
-      {data ? (
+      {currentData ? (
         <p className="mt-5 text-xs leading-5 text-white/35">
           Ownership discovery is enabled for this verified contract. Physical
           merchandising remains disabled until commercial-use rights are approved.
